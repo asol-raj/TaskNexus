@@ -1,41 +1,33 @@
-import { axios, log } from "./help.js";
+import { axios, log, showAlert, getAuthToken } from "./help.js";
 
-const loginForm = document.getElementById("loginForm");
+const form = document.getElementById("loginForm");
+const alertBox = document.getElementById("alertBox");
 
-if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  const formData = {
+    email: form.email.value.trim(),
+    password: form.password.value.trim(),
+  };
 
-    try {
-      const res = await axios.post("/api/auth/login", { email, password });
+  try {
+    const res = await axios.post("/auth/login", formData);
 
-      // Store JWT in localStorage
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.user.role);
+    // Save token + user in localStorage
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // Redirect based on role
-      switch (res.data.user.role) {
-        case "super_admin":
-          window.location.href = "/dashboard/super";
-          break;
-        case "admin":
-          window.location.href = "/dashboard/admin";
-          break;
-        case "manager":
-          window.location.href = "/dashboard/manager";
-          break;
-        case "employee":
-          window.location.href = "/dashboard/employee";
-          break;
-        default:
-          alert("Role not recognized!");
-      }
-    } catch (err) {
-      log(err);
-      alert(err.response?.data?.msg || "Login failed. Please try again.");
-    }
-  });
-}
+    showAlert("success", "Login successful! Redirecting...");
+
+    // Redirect after short delay
+    setTimeout(() => {
+      window.location.href = "/dashboard"; // change path if needed
+    }, 1000);
+
+  } catch (err) {
+    console.error(err);
+    const msg = err.response?.data?.msg || "Invalid credentials";
+    showAlert("danger", msg);
+  }
+});

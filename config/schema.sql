@@ -1,3 +1,15 @@
+-- Active: 1755672853063@@127.0.0.1@3306@tasknexus
+
+CREATE DATABASE `tasknexus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+CREATE USER 'user_tasknexus'@'%' IDENTIFIED BY 'J4s5CrejLmaMaCU2';
+
+
+GRANT ALL PRIVILEGES ON `tasknexus`.* TO 'user_tasknexus'@'%';
+FLUSH PRIVILEGES;
+
+
 -- =========================================
 -- CLIENTS (your customers using the app)
 CREATE TABLE `clients` (

@@ -15,13 +15,14 @@ exports.authenticateJWT = async (req, res, next) => {
       // Always fetch fresh user info from DB
       const [rows] = await pool.query(
         "SELECT `id`, `username`, `email`, `role`, `client_id`, `manager_id` FROM `users` WHERE `id` = ?",
-        [decoded.user_id]
+        [decoded.id]   // ✅ use id, not user_id
       );
 
       if (rows.length === 0) return res.status(404).json({ msg: "User not found" });
 
+      // Attach user object to request
       req.user = {
-        user_id: rows[0].id,
+        id: rows[0].id,  // ✅ keep it consistent as `id`
         username: rows[0].username,
         email: rows[0].email,
         role: rows[0].role,

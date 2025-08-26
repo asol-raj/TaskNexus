@@ -1,67 +1,53 @@
-import { axios, log } from "./help.js";
+import { showAlert, getAuthUser, getAuthToken } from "./help.js";
 
 const form = document.getElementById("registerForm");
-const clientSelectWrapper = document.getElementById("clientSelectWrapper");
-const clientSelect = document.getElementById("client_id");
+const clientGroup = document.getElementById("clientGroup");
+const managerGroup = document.getElementById("managerGroup");
 
-const role = localStorage.getItem("role");
-const token = localStorage.getItem("token");
+// Get logged-in user role
+const currentUser = getAuthUser(); // stored in localStorage after login
 
-// If super_admin, show client dropdown and load clients
-async function loadClients() {
-  try {
-    const res = await axios.get("/api/clients", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+// Show/hide fields based on role
+if (currentUser.role === "super_admin") {
+  clientGroup.classList.remove("d-none");
+  managerGroup.classList.remove("d-none");
+} else if (currentUser.role === "admin") {
+  managerGroup.classList.remove("d-none");
+  // client_id auto-filled (admin’s own), no need to show
+} else if (currentUser.role === "manager") {
+  // Manager cannot see client/manager fields
+}
 
-    // Populate dropdown
-    res.data.forEach((c) => {
-      const option = document.createElement("option");
-      option.value = c.client_id;
-      option.textContent = `${c.name} (ID: ${c.client_id})`;
-      clientSelect.appendChild(option);
-    });
-  } catch (err) {
-    log(err);
-    alert("Failed to load clients.");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = {
+    username: form.username.value.trim(),
+    email: form.email.value.trim(),
+    password: form.password.value.trim(),
+    role: form.role.value
+  };
+
+  // Only super_admin can assign client_id
+  if (currentUser.role === "super_admin" && form.client_id.value) {
+    formData.client_id = form.client_id.value;
   }
-}
 
-if (role === "super_admin" && clientSelectWrapper) {
-  clientSelectWrapper.classList.remove("d-none");
-  loadClients();
-}
+  // Admin and super_admin can assign manager_id
+  if ((currentUser.role === "super_admin" || currentUser.role === "admin") && form.manager_id.value) {
+    formData.manager_id = form.manager_id.value;
+  }
 
-if (form) {
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  try {
+    const res = await axios.post("/auth/register", formData, {
+      headers: { Authorization: `Bearer ${getAuthToken()}` }
+    });
 
-    if (!token) {
-      alert("Unauthorized. Please log in first.");
-      return (window.location.href = "/login");
-    }
-
-    const userData = {
-      username: document.getElementById("username").value.trim(),
-      email: document.getElementById("email").value.trim(),
-      password: document.getElementById("password").value,
-      role: document.getElementById("role").value
-    };
-
-    if (role === "super_admin") {
-      userData.client_id = clientSelect.value || null;
-    }
-
-    try {
-      const res = await axios.post("/api/auth/register", userData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      alert(res.data.msg);
-      form.reset();
-    } catch (err) {
-      log(err);
-      alert(err.response?.data?.msg || "Registration failed.");
-    }
-  });
-}
+    showAlert("success", res.data.msg || "User registered successfully");
+    form.reset();
+  } catch (err) {
+    console.error(err);
+    const msg = err.response?.data?.msg || "Registration failed";
+    showAlert("danger", msg);
+  }
+});

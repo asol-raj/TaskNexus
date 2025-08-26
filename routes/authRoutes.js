@@ -1,13 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const { register, login, profile } = require("../controllers/authController");
-const { authenticateJWT } = require("../middleware/authMiddleware");
+const { authenticateJWT } = require("../middlewares/authMiddleware");
 
-// Public routes
-router.post("/register", register);
+// ======================== AUTH ROUTES ========================
+
+// Register new user (only admins, super_admins, managers allowed)
+router.post("/register", authenticateJWT, register);
+
+// Login
 router.post("/login", login);
 
-// Protected route (example)
+// Profile (requires authentication)
 router.get("/profile", authenticateJWT, profile);
 
 module.exports = router;

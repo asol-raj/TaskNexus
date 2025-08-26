@@ -19,15 +19,15 @@ async function loadUsers() {
       .map(
         (u) => `
         <tr>
-          <td>${u.user_id}</td>
+          <td>${u.id}</td>
           <td>${u.username}</td>
           <td>${u.email}</td>
           <td>${u.role}</td>
           <td>${u.client_id || "-"}</td>
           <td>
-            <button class="btn btn-sm btn-info" onclick="openEditModal(${u.user_id}, '${u.username}', '${u.email}', '${u.role}')">Edit</button>
-            <button class="btn btn-sm btn-warning" onclick="openResetModal(${u.user_id})">Reset Password</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.user_id})">Delete</button>
+            <button class="btn btn-sm btn-info" onclick="openEditModal(${u.id}, '${u.username}', '${u.email}', '${u.role}')">Edit</button>
+            <button class="btn btn-sm btn-warning" onclick="openResetModal(${u.id})">Reset Password</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Delete</button>
           </td>
         </tr>
       `

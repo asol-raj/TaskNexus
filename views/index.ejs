@@ -1,0 +1,21 @@
+
+
+<div class="container mt-5 text-center" id="welcomeSection">
+  <h1>Welcome to TaskNexus 🚀</h1>
+  <p class="lead">Streamline your nptasks, tickets, and attendance — all in one place.</p>
+
+  <div class="mt-4">
+    <a href="/auth/login" class="btn btn-primary me-2">Login</a>
+    <!-- <a href="/auth/register" class="btn btn-outline-secondary">Register</a> -->
+  </div>
+</div>
+
+<script>
+  // Check if already logged in
+  const token = localStorage.getItem("token");
+  if (token) {
+    window.location.href = "/dashboard";
+  } else {
+    document.getElementById("welcomeSection").style.display = "block";
+  }
+</script>

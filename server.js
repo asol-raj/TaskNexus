@@ -1,43 +1,37 @@
 require("dotenv").config();
 const express = require("express");
-const path = require("path");
 const session = require("express-session");
 const flash = require("connect-flash");
 const methodOverride = require("method-override");
-const passport = require("passport");
 const expressLayouts = require("express-ejs-layouts");
-// const { sequelize } = require("./config/db"); // MySQL connection (sequelize instance)
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
-const clientRoutes = require("./routes/clientRoutes");
-app.use("/api/clients", clientRoutes);
+const path = require("path");
+const pool = require("./config/db"); // MySQL connection (mysql2 pool)
 
-const userRoutes = require("./routes/userRoutes");
-app.use("/api/users", userRoutes);
-
-
-
-// Initialize app
 const app = express();
 
-// Middleware
+// ================== Middleware ==================
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(methodOverride("_method"));
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
 // EJS setup
-app.use(expressLayouts);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
 
-// Session middleware
+// Session middleware (used mainly for flash messages)
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "supersecret",
     resave: false,
     saveUninitialized: false,
   })
@@ -45,11 +39,6 @@ app.use(
 
 // Flash messages
 app.use(flash());
-
-// Passport config
-require("./config/passport")(passport);
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Global variables for flash
 app.use((req, res, next) => {
@@ -59,17 +48,28 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-app.use("/", require("./routes/index"));
-app.use("/auth", require("./routes/auth"));
-app.use("/dashboard", require("./routes/dashboard"));
+// ================== Routes ==================
+app.use("/", require("./routes/index"));       // Web routes
+app.use("/auth", require("./routes/auth"));    // Web auth routes
+// app.use("/dashboard", require("./routes/dashboard")); // Web dashboard routes
 
-// Test DB connection
-sequelize
-  .authenticate()
-  .then(() => console.log("✅ MySQL connected..."))
-  .catch((err) => console.error("❌ DB connection error:", err));
+// API routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/clients", require("./routes/clientRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 
-// Start server
+// ================== Test DB connection ==================
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error("❌ DB connection error:", err);
+  } else {
+    console.log("✅ MySQL connected...");
+    connection.release();
+  }
+});
+
+// ================== Start server ==================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);

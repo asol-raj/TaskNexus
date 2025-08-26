@@ -1,45 +1,56 @@
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <div class="card shadow-lg p-4 rounded-3">
-        <h3 class="text-center mb-4">Register New User</h3>
 
-        <form id="registerForm">
-          <div class="mb-3">
-            <label for="username" class="form-label">Full Name</label>
-            <input type="text" id="username" class="form-control" required />
-          </div>
+      <h2 class="text-center mb-4">Register New User</h2>
 
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" id="email" class="form-control" required />
-          </div>
+      <!-- Alert -->
+      <div id="alertBox" class="alert d-none" role="alert"></div>
 
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" class="form-control" required />
-          </div>
+      <form id="registerForm">
+        <!-- Username -->
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required>
+        </div>
 
-          <div class="mb-3">
-            <label for="role" class="form-label">Role</label>
-            <select id="role" class="form-select" required>
-              <option value="employee">Employee</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
 
-          <!-- Only visible for super_admin -->
-          <div class="mb-3 d-none" id="clientSelectWrapper">
-            <label for="client_id" class="form-label">Assign to Client</label>
-            <select id="client_id" class="form-select">
-              <option value="">-- Select Client --</option>
-            </select>
-          </div>
+        <!-- Password -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
 
-          <button type="submit" class="btn btn-success w-100">Register User</button>
-        </form>
-      </div>
+        <!-- Role -->
+        <div class="mb-3">
+          <label for="role" class="form-label">Role</label>
+          <select class="form-select" id="role" name="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+            <option value="employee">Employee</option>
+          </select>
+        </div>
+
+        <!-- Client ID (visible only to super_admin) -->
+        <div class="mb-3 d-none" id="clientGroup">
+          <label for="client_id" class="form-label">Client ID</label>
+          <input type="number" class="form-control" id="client_id" name="client_id">
+        </div>
+
+        <!-- Manager ID (visible only to super_admin & admin) -->
+        <div class="mb-3 d-none" id="managerGroup">
+          <label for="manager_id" class="form-label">Manager ID</label>
+          <input type="number" class="form-control" id="manager_id" name="manager_id">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+      </form>
     </div>
   </div>
 </div>

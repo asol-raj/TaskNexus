@@ -1,35 +1,26 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <h2 class="text-center mb-4">Login</h2>
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
-  <div class="card shadow-lg p-4 rounded-3" style="width: 400px;">
-    <h3 class="text-center mb-4">Login</h3>
+      <!-- Alert -->
+      <div id="alertBox" class="alert d-none" role="alert"></div>
 
-    <!-- Flash messages (if server sends any) -->
-    <% if (typeof error_msg !== 'undefined') { %>
-      <div class="alert alert-danger"><%= error_msg %></div>
-    <% } %>
-    <% if (typeof success_msg !== 'undefined') { %>
-      <div class="alert alert-success"><%= success_msg %></div>
-    <% } %>
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required>
+        </div>
 
-    <form id="loginForm">
-      <div class="mb-3">
-        <label for="email" class="form-label">Email Address</label>
-        <input type="email" id="email" class="form-control" placeholder="Enter your email" required />
-      </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
 
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" id="password" class="form-control" placeholder="Enter your password" required />
-      </div>
-
-      <button type="submit" class="btn btn-primary w-100">Login</button>
-    </form>
-
-    <div class="text-center mt-3">
-      <small class="text-muted">© TaskNexus</small>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
     </div>
   </div>
 </div>
 
-<!-- Page script -->
 <script type="module" src="/js/login.js"></script>
